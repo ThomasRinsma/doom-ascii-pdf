@@ -18,7 +18,7 @@
 //	parse command line parameters, configure game parameters (turbo),
 //	and call the startup functions.
 //
-
+#include <emscripten.h>
 
 #include <ctype.h>
 #include <stdio.h>
@@ -402,6 +402,21 @@ bool D_GrabMouseCallback(void)
     return (gamestate == GS_LEVEL) && !demoplayback && !advancedemo;
 }
 
+void cb_do_frame() {
+    // frame syncronous IO operations
+    I_StartFrame ();
+
+    TryRunTics (); // will run at least one tic
+
+    S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
+
+    // Update display, next frame, with current state.
+    if (screenvisible)
+    {
+        D_Display ();
+    }
+}
+
 //
 //  D_DoomLoop
 //
@@ -421,39 +436,39 @@ void D_DoomLoop (void)
 
     main_loop_started = true;
 
+
     TryRunTics();
+
+    printf("DOOM LOOP 2\n");
+
 
     I_SetWindowTitle(gamedescription);
     I_GraphicsCheckCommandLine();
     I_SetGrabMouseCallback(D_GrabMouseCallback);
     I_InitGraphics();
     I_EnableLoadingDisk();
+    printf("DOOM LOOP 3\n");
 
     V_RestoreBuffer();
     R_ExecuteSetViewSize();
 
+    printf("DOOM LOOP 4\n");
     D_StartGameLoop();
+    printf("DOOM LOOP 5\n");
 
     if (testcontrols)
     {
         wipegamestate = gamestate;
     }
 
-    while (1)
-    {
-		// frame syncronous IO operations
-		I_StartFrame ();
+    EM_ASM({
+        app.setInterval('Module._cb_do_frame()', 33);
+    });
 
-		TryRunTics (); // will run at least one tic
+    // while (1)
+    // {
 
-		S_UpdateSounds (players[consoleplayer].mo);// move positional sounds
-
-		// Update display, next frame, with current state.
-		if (screenvisible)
-		{
-			D_Display ();
-		}
-    }
+    // }
 }
 
 

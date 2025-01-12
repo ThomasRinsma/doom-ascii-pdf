@@ -764,22 +764,23 @@ void TryRunTics (void)
 
     // wait for new tics if needed
 
+
     while (!PlayersInGame() || lowtic < gametic/ticdup + counts)
     {
-	NetUpdate ();
+	   NetUpdate ();
 
         lowtic = GetLowTic();
 
-	if (lowtic < gametic/ticdup)
-	    I_Error ("TryRunTics: lowtic < gametic");
+    	if (lowtic < gametic/ticdup)
+    	    I_Error ("TryRunTics: lowtic < gametic");
 
         // Don't stay in this loop forever.  The menu is still running,
         // so return to update the screen
 
-	if (I_GetTime() / ticdup - entertic > 0)
-	{
-	    return;
-	}
+    	if (I_GetTime() / ticdup - entertic > 0)
+    	{
+    	    return;
+    	}
 
         I_Sleep(1);
     }

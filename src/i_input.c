@@ -283,8 +283,6 @@ void I_GetEvent(void)
     int pressed;
     unsigned char key;
 
-	DG_ReadInput();
-
 	while (DG_GetKey(&pressed, &key))
     {
         UpdateShiftStatus(pressed, key);
